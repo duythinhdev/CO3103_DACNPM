@@ -48,7 +48,7 @@ export default function Chat() {
     }
   }
   function logout() {
-    axios.post('/logout').then(() => {
+    axios.post('/user/logout').then(() => {
       setWs(null);
       setId(null);
       setUsername(null);
@@ -94,7 +94,7 @@ export default function Chat() {
   }, [messages]);
 
   useEffect(() => {
-    axios.get('/people').then(res => {
+    axios.get('user/people').then(res => {
       const offlinePeopleArr = res.data
         .filter(p => p._id !== id)
         .filter(p => !Object.keys(onlinePeople).includes(p._id));
