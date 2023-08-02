@@ -5,8 +5,6 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const bcrypt = require('bcryptjs');
-const User = require('./models/User');
 const Message = require('./models/Message');
 const ws = require('ws');
 const fs = require('fs');
@@ -17,7 +15,6 @@ mongoose.connect(process.env.MONGO_URL, (err) => {
   if (err) throw err;
 });
 const jwtSecret = process.env.JWT_SECRET;
-const bcryptSalt = bcrypt.genSaltSync(10);
 
 const app = express();
 app.use(cors({credentials: true, origin: 'http://localhost:5173'}));
