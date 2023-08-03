@@ -1,7 +1,7 @@
 import {useContext, useEffect, useRef, useState} from "react";
 import Avatar from "./Avatar";
 import Logo from "./Logo";
-import {UserContext} from "./UserContext.jsx";
+import {UserContext} from "./context/UserContext.jsx";
 import {uniqBy} from "lodash";
 import axios from "axios";
 import Contact from "./Contact";
