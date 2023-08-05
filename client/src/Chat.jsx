@@ -7,6 +7,7 @@ import axios from "axios";
 import Contact from "./Contact";
 
 export default function Chat() {
+
   const [ws,setWs] = useState(null);
   const [onlinePeople,setOnlinePeople] = useState({});
   const [offlinePeople,setOfflinePeople] = useState({});
@@ -15,9 +16,44 @@ export default function Chat() {
   const [messages,setMessages] = useState([]);
   const {username,id,setId,setUsername} = useContext(UserContext);
   const divUnderMessages = useRef();
+
   useEffect(() => {
     connectToWs();
   }, [selectedUserId]);
+
+  useEffect(() => {
+    const div = divUnderMessages.current;
+    if (div) {
+      div.scrollIntoView({behavior:'smooth', block:'end'});
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    axios.get('user/people').then(res => {
+      const offlinePeopleArr = res.data
+          .filter(p => p._id !== id)
+          .filter(p => !Object.keys(onlinePeople).includes(p._id));
+      const offlinePeople = {};
+      offlinePeopleArr.forEach(p => {
+        offlinePeople[p._id] = p;
+      });
+      setOfflinePeople(offlinePeople);
+    });
+  }, [onlinePeople]);
+
+  useEffect(() => {
+    if (selectedUserId) {
+      axios.get('/messages/'+selectedUserId).then(res => {
+        setMessages(res.data);
+      });
+    }
+  }, [selectedUserId]);
+
+  const onlinePeopleExclOurUser = {...onlinePeople};
+  delete onlinePeopleExclOurUser[id];
+
+  const messagesWithoutDupes = uniqBy(messages, '_id');
+
   function connectToWs() {
     const ws = new WebSocket('ws://localhost:4040');
     setWs(ws);
@@ -29,6 +65,7 @@ export default function Chat() {
       }, 1000);
     });
   }
+
   function showOnlinePeople(peopleArray) {
     const people = {};
     peopleArray.forEach(({userId,username}) => {
@@ -37,12 +74,12 @@ export default function Chat() {
     setOnlinePeople(people);
   }
   function handleMessage(ev) {
-    const messageData = JSON.parse(ev.data);
+    const messageData = JSON.parse(ev?.data);
     console.log({ev,messageData});
     if ('online' in messageData) {
-      showOnlinePeople(messageData.online);
+      showOnlinePeople(messageData?.online);
     } else if ('text' in messageData) {
-      if (messageData.sender === selectedUserId) {
+      if (messageData?.sender === selectedUserId) {
         setMessages(prev => ([...prev, {...messageData}]));
       }
     }
@@ -85,39 +122,6 @@ export default function Chat() {
       });
     };
   }
-
-  useEffect(() => {
-    const div = divUnderMessages.current;
-    if (div) {
-      div.scrollIntoView({behavior:'smooth', block:'end'});
-    }
-  }, [messages]);
-
-  useEffect(() => {
-    axios.get('user/people').then(res => {
-      const offlinePeopleArr = res.data
-        .filter(p => p._id !== id)
-        .filter(p => !Object.keys(onlinePeople).includes(p._id));
-      const offlinePeople = {};
-      offlinePeopleArr.forEach(p => {
-        offlinePeople[p._id] = p;
-      });
-      setOfflinePeople(offlinePeople);
-    });
-  }, [onlinePeople]);
-
-  useEffect(() => {
-    if (selectedUserId) {
-      axios.get('/messages/'+selectedUserId).then(res => {
-        setMessages(res.data);
-      });
-    }
-  }, [selectedUserId]);
-
-  const onlinePeopleExclOurUser = {...onlinePeople};
-  delete onlinePeopleExclOurUser[id];
-
-  const messagesWithoutDupes = uniqBy(messages, '_id');
 
   return (
     <div className="flex h-screen">
