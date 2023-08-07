@@ -1,10 +1,9 @@
 import {useContext, useEffect, useRef, useState} from "react";
-import Avatar from "./Avatar";
-import Logo from "./Logo";
-import {UserContext} from "./context/UserContext.jsx";
+import Logo from "../Logo/Logo.jsx";
+import {UserContext} from "../../context/user/UserContext.jsx";
 import {uniqBy} from "lodash";
 import axios from "axios";
-import Contact from "./Contact";
+import Contact from "../Contact/Contact.jsx";
 
 export default function Chat() {
 
@@ -82,7 +81,7 @@ export default function Chat() {
     } else if ('text' in messageData) {
       if (messageData?.sender === selectedUserId) {
         setMessages(prev => ([...prev, {...messageData}]));
-      }else {
+      } else {
         setMessages(prev => ([...prev, {...messageData}]));
       }
     }

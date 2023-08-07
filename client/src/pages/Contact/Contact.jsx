@@ -1,4 +1,4 @@
-import Avatar from "./Avatar.jsx";
+import Avatar from "../Avatar/Avatar.jsx";
 
 export default function Contact({id,username,onClick,selected,online}) {
   return (
