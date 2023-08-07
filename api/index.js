@@ -36,7 +36,6 @@ async function getUserDataFromRequest(req) {
       reject('no token');
     }
   });
-
 }
 
 app.get('/test', (req,res) => {
@@ -60,7 +59,6 @@ const server = app.listen(4040);
 
 const wss = new ws.WebSocketServer({server});
 wss.on('connection', (connection, req) => {
-
   function notifyAboutOnlinePeople() {
     [...wss.clients].forEach(client => {
       client.send(JSON.stringify({
@@ -120,15 +118,12 @@ wss.on('connection', (connection, req) => {
     }
     if (recipient && (text || file)) {
       const messageDoc = await Message.create({
-        sender:connection.userId,
+        sender: connection.userId,
         recipient,
         text,
         file: file ? filename : null,
       });
-      console.log('created message');
-      [...wss.clients]
-        .filter(c => c.userId === recipient)
-        .forEach(c => c.send(JSON.stringify({
+      [...wss.clients].filter(c => c.userId === recipient).map(c => c.send(JSON.stringify({
           text,
           sender:connection.userId,
           recipient,
