@@ -9,6 +9,7 @@ const Message = require('./models/Message');
 const ws = require('ws');
 const fs = require('fs');
 const userRouter = require('../api/router/user/index');
+const { getUserDataFromRequest } = require("../api/util/index");
 
 dotenv.config();
 mongoose.connect(process.env.MONGO_URL, (err) => {
@@ -23,20 +24,6 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-async function getUserDataFromRequest(req) {
-  return new Promise((resolve, reject) => {
-    const token = req.cookies?.token;
-    if (token) {
-      jwt.verify(token, jwtSecret, {}, (err, userData) => {
-        if (err) throw err;
-        resolve(userData);
-      });
-    } else {
-      reject('no token');
-    }
-  });
-}
 
 app.get('/test', (req,res) => {
   res.json('test ok');
@@ -123,7 +110,8 @@ wss.on('connection', (connection, req) => {
         text,
         file: file ? filename : null,
       });
-      [...wss.clients].filter(c => c.userId === recipient).map(c => c.send(JSON.stringify({
+      [...wss.clients]
+        .filter(c => c.userId === recipient).map(c => c.send(JSON.stringify({
           text,
           sender:connection.userId,
           recipient,
