@@ -81,11 +81,12 @@ export default function Chat() {
     } else if ('text' in messageData) {
       if (messageData?.sender === selectedUserId) {
         setMessages(prev => ([...prev, {...messageData}]));
-      } else {
+      } else if(messageData?.sender === selectedUserId) {
         setMessages(prev => ([...prev, {...messageData}]));
       }
     }
   }
+  console.log("messages",messages)
   function logout() {
     axios.post('/user/logout').then(() => {
       setWs(null);
