@@ -67,6 +67,7 @@ wss.on('connection', (connection, req) => {
     }, 1000);
   }, 5000);
 
+  console.log("connection",connection.timer);
   connection.on('pong', () => {
     clearTimeout(connection.deathTimer);
   });
