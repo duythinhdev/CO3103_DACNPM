@@ -10,9 +10,9 @@ const ws = require('ws');
 const fs = require('fs');
 const userRouter = require('../api/router/user/index');
 const { getUserDataFromRequest } = require("../api/util/index");
-const { connectionDb } = require("../api/mongodb/index");
 
 dotenv.config();
+
 
 mongoose.connect(process.env.MONGO_URL, (err) => {
   if (err) throw err;
@@ -43,7 +43,6 @@ app.get('/messages/:userId', async (req,res) => {
 });
 
 app.use('/user',userRouter);
-app.use(connectionDb);
 
 const server = app.listen(4040);
 
