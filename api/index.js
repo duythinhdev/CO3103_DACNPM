@@ -47,15 +47,29 @@ app.use('/user',userRouter);
 const server = app.listen(4040);
 
 const wss = new ws.WebSocketServer({server});
+let clientConns = {};
 wss.on('connection', (connection, req) => {
   function notifyAboutOnlinePeople() {
-    [...wss.clients].forEach(client => {
-      client.send(JSON.stringify({
-        online: [...wss.clients].map(c => ({userId:c.userId,username:c.username})),
+    // [...wss.clients].forEach(client => {
+    //   client.send(JSON.stringify({
+    //     online: [...wss.clients].map(c => ({userId:c.userId,username:c.username})),
+    //   }));
+    // });
+    for (const [userId, conObject] of Object.entries(clientConns)){
+      console.log(`${userId}: ${conObject.username}`);
+    };
+    console.log(Object.keys(clientConns).length)
+    for (const [userId, conObject] of Object.entries(clientConns)){
+      conObject.client.send(JSON.stringify({
+        online: Object.entries(clientConns).map(([userId, conObject]) => ({userId:userId,username:conObject.username})),
       }));
-    });
+    }
+    // [...wss.clients].forEach(client => {
+    //   client.send(JSON.stringify({
+    //     online: [...wss.clients].map(c => ({userId:c.userId,username:c.username})),
+    //   }));
+    // });
   }
-
   connection.isAlive = true;
 
   connection.timer = setInterval(() => {
@@ -76,13 +90,17 @@ wss.on('connection', (connection, req) => {
   // read username and id form the cookie for this connection
   const cookies = req.headers.cookie;
   if (cookies) {
-    const tokenCookieString = cookies.split(';').find(str => str.startsWith('token='));
+    const tokenCookieString = cookies.split('; ').find(str => str.startsWith('token='));
     if (tokenCookieString) {
       const token = tokenCookieString.split('=')[1];
       if (token) {
         jwt.verify(token, jwtSecret, {}, (err, userData) => {
           if (err) throw err;
           const {userId, username} = userData;
+          clientConns[userId] = {
+            username: username,
+            client: connection,
+          }
           connection.userId = userId;
           connection.username = username;
         });
@@ -98,13 +116,14 @@ wss.on('connection', (connection, req) => {
       console.log('size', file.data.length);
       const parts = file.name.split('.');
       const ext = parts[parts.length - 1];
-      filename = Date.now() + '.'+ext;
+      filename = Date.now() + '.' + ext;
       const path = __dirname + '/uploads/' + filename;
       const bufferData = new Buffer(file.data.split(',')[1], 'base64');
       fs.writeFile(path, bufferData, () => {
         console.log('file saved:'+path);
       });
     }
+
     if (recipient && (text || file)) {
       const messageDoc = await Message.create({
         sender: connection.userId,
@@ -112,14 +131,21 @@ wss.on('connection', (connection, req) => {
         text,
         file: file ? filename : null,
       });
-      [...wss.clients]
-        .filter(c => c.userId === recipient).map(c => c.send(JSON.stringify({
-          text,
-          sender:connection.userId,
-          recipient,
-          file: file ? filename : null,
-          _id:messageDoc._id,
-        })));
+      // [...wss.clients]
+      //   .filter(c => c.userId === recipient).map(c => c.send(JSON.stringify({
+      //     text,
+      //     sender:connection.userId,
+      //     recipient,
+      //     file: file ? filename : null,
+      //     _id:messageDoc._id,
+      //   })));
+      clientConns[recipient].client.send(JSON.stringify({
+        text,
+        sender: connection.userId,
+        recipient,
+        file: file ? filename : null,
+        _id:messageDoc._id,
+      }))
     }
   });
   // notify everyone about online people (when someone connects)

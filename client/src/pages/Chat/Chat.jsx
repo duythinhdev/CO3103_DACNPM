@@ -81,8 +81,6 @@ export default function Chat() {
     } else if ('text' in messageData) {
       if (messageData?.sender === selectedUserId) {
         setMessages(prev => ([...prev, {...messageData}]));
-      } else {
-        setMessages(prev => ([...prev,{...messageData}]));
       }
     }
   }
@@ -109,11 +107,13 @@ export default function Chat() {
       setMessages(prev => ([...prev,{
         text: newMessageText,
         sender: id,
-        recipient: selectedUserId,
+        recipient: selectedUserId.toString(),
         _id: Date.now(),
       }]));
     }
   }
+  console.log("selectedUserId",selectedUserId);
+  console.log("id",id);
   function sendFile(ev) {
     const reader = new FileReader();
     reader.readAsDataURL(ev.target.files[0]);
