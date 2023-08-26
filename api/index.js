@@ -24,8 +24,10 @@ app.use(cors({credentials: true, origin: 'http://localhost:5173'}));
 
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(cookieParser());
-app.use(bodyParser.json());
+app.use(express.json());
+// app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
 
 app.get('/test', (req,res) => {
   res.json('test ok');
@@ -55,10 +57,10 @@ wss.on('connection', (connection, req) => {
     //     online: [...wss.clients].map(c => ({userId:c.userId,username:c.username})),
     //   }));
     // });
-    for (const [userId, conObject] of Object.entries(clientConns)){
-      console.log(`${userId}: ${conObject.username}`);
-    };
-    console.log(Object.keys(clientConns).length)
+    // for (const [userId, conObject] of Object.entries(clientConns)){
+    //   console.log(`${userId}: ${conObject.username}`);
+    // };
+    // console.log(Object.keys(clientConns).length)
     for (const [userId, conObject] of Object.entries(clientConns)){
       conObject.client.send(JSON.stringify({
         online: Object.entries(clientConns).map(([userId, conObject]) => ({userId:userId,username:conObject.username})),

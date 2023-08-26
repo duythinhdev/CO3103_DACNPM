@@ -26,7 +26,8 @@
     "redux-observable": "^2.0.0",
     "sass": "^1.65.1",
     "tailwindcss": "^3.2.4",
-    "toolkit": "^1.5.4"
+    "toolkit": "^1.5.4",
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",
