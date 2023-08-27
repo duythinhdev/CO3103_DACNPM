@@ -1,11 +1,16 @@
 const mongoose = require('mongoose');
 
 const MessageSchema = new mongoose.Schema({
-  sender: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-  recipient: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  type: {
+    type: String,
+    enum: ['user', 'group']
+  },
+  sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  recipient: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  groupId: { type: mongoose.Schema.Types.ObjectId, ref: 'Group' },
   text: String,
   file: String,
-}, {timestamps:true});
+}, { timestamps: true });
 
 const MessageModel = mongoose.model('Message', MessageSchema);
 
