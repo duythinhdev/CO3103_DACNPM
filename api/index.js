@@ -9,6 +9,7 @@ const Message = require('./models/Message');
 const ws = require('ws');
 const fs = require('fs');
 const userRouter = require('../api/router/user/index');
+const groupRouter = require('../api/router/group/index');
 const passport = require('passport');
 const cookieSession = require('cookie-session');
 const session = require('express-session');
@@ -24,7 +25,7 @@ mongoose.connect(process.env.MONGO_URL, (err) => {
 const jwtSecret = process.env.JWT_SECRET;
 
 const app = express();
-app.use(cors({credentials: true, origin: 'http://localhost:5173'}));
+app.use(cors({ credentials: true, origin: 'http://localhost:5173' }));
 
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(cookieParser());
@@ -32,48 +33,35 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-app.get('/test', (req,res) => {
+app.get('/test', (req, res) => {
   res.json('test ok');
 });
 
-app.get('/messages/:userId', async (req,res) => {
-  const {userId} = req.params;
+app.get('/messages/:userId', async (req, res) => {
+  const { userId } = req.params;
   const userData = await getUserDataFromRequest(req);
   const ourUserId = userData.userId;
   const messages = await Message.find({
-    sender: {$in:[userId,ourUserId]},
-    recipient: {$in:[userId,ourUserId]},
-  }).sort({createdAt: 1});
+    sender: { $in: [userId, ourUserId] },
+    recipient: { $in: [userId, ourUserId] },
+  }).sort({ createdAt: 1 });
   res.json(messages);
 });
 
-app.use('/user',userRouter);
+app.use('/user', userRouter);
+app.use('/group', groupRouter);
 
 const server = app.listen(7878);
 
-const wss = new ws.WebSocketServer({server});
+const wss = new ws.WebSocketServer({ server });
 let clientConns = {};
 wss.on('connection', (connection, req) => {
   function notifyAboutOnlinePeople() {
-    // [...wss.clients].forEach(client => {
-    //   client.send(JSON.stringify({
-    //     online: [...wss.clients].map(c => ({userId:c.userId,username:c.username})),
-    //   }));
-    // });
-    // for (const [userId, conObject] of Object.entries(clientConns)){
-    //   console.log(`${userId}: ${conObject.username}`);
-    // };
-    // console.log(Object.keys(clientConns).length)
-    for (const [userId, conObject] of Object.entries(clientConns)){
+    for (const [userId, conObject] of Object.entries(clientConns)) {
       conObject.client.send(JSON.stringify({
-        online: Object.entries(clientConns).map(([userId, conObject]) => ({userId:userId,username:conObject.username})),
+        online: Object.entries(clientConns).map(([userId, conObject]) => ({ userId: userId, username: conObject.username })),
       }));
     }
-    // [...wss.clients].forEach(client => {
-    //   client.send(JSON.stringify({
-    //     online: [...wss.clients].map(c => ({userId:c.userId,username:c.username})),
-    //   }));
-    // });
   }
   connection.isAlive = true;
 
@@ -101,7 +89,7 @@ wss.on('connection', (connection, req) => {
       if (token) {
         jwt.verify(token, jwtSecret, {}, (err, userData) => {
           if (err) throw err;
-          const {userId, username} = userData;
+          const { userId, username } = userData;
           clientConns[userId] = {
             username: username,
             client: connection,
@@ -115,7 +103,7 @@ wss.on('connection', (connection, req) => {
 
   connection.on('message', async (message) => {
     const messageData = JSON.parse(message.toString());
-    const {recipient, text, file} = messageData;
+    const { recipient, text, file } = messageData;
     let filename = null;
     if (file) {
       console.log('size', file.data.length);
@@ -125,31 +113,25 @@ wss.on('connection', (connection, req) => {
       const path = __dirname + '/uploads/' + filename;
       const bufferData = new Buffer(file.data.split(',')[1], 'base64');
       fs.writeFile(path, bufferData, () => {
-        console.log('file saved:'+path);
+        console.log('file saved:' + path);
       });
     }
 
     if (recipient && (text || file)) {
       const messageDoc = await Message.create({
+        type: "user",
         sender: connection.userId,
         recipient,
         text,
         file: file ? filename : null,
       });
-      // [...wss.clients]
-      //   .filter(c => c.userId === recipient).map(c => c.send(JSON.stringify({
-      //     text,
-      //     sender:connection.userId,
-      //     recipient,
-      //     file: file ? filename : null,
-      //     _id:messageDoc._id,
-      //   })));
+
       clientConns[recipient].client.send(JSON.stringify({
         text,
         sender: connection.userId,
         recipient,
         file: file ? filename : null,
-        _id:messageDoc._id,
+        _id: messageDoc._id,
       }))
     }
   });
