@@ -13,7 +13,7 @@ exports.login = async (req,res) => {
     if (foundUser) {
         const passOk = bcrypt.compareSync(password, foundUser.password);
         if (passOk) {
-            jwt.sign({userId:foundUser._id,username}, jwtSecret, {}, (err, token) => {
+            jwt.sign({userId: foundUser._id,username}, jwtSecret, {}, (err, token) => {
                 res.cookie('token', token, {sameSite:'none', secure:true}).json({
                     id: foundUser._id,
                 });
@@ -43,6 +43,12 @@ exports.register = async (req,res) => {
 };
 
 exports.logout = (req,res) => {
+    // req.session?.regenerate((err) => {
+    //     if (err) {
+    //         console.error('Error regenerating session:', err);
+    //     }
+    //     res.redirect('/');
+    // });
     res.cookie('token', '', {sameSite:'none', secure:true}).json('ok');
 };
 
