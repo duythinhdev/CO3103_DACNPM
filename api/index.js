@@ -10,7 +10,11 @@ const ws = require('ws');
 const fs = require('fs');
 const userRouter = require('../api/router/user/index');
 const groupRouter = require('../api/router/group/index');
+const passport = require('passport');
+const cookieSession = require('cookie-session');
+const session = require('express-session');
 const { getUserDataFromRequest } = require("../api/util/index");
+require("./util/passport");
 
 dotenv.config();
 
@@ -25,8 +29,7 @@ app.use(cors({ credentials: true, origin: 'http://localhost:5173' }));
 
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(cookieParser());
-app.use(express.json());
-// app.use(bodyParser.json());
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
@@ -48,7 +51,7 @@ app.get('/messages/:userId', async (req, res) => {
 app.use('/user', userRouter);
 app.use('/group', groupRouter);
 
-const server = app.listen(4040);
+const server = app.listen(7878);
 
 const wss = new ws.WebSocketServer({ server });
 let clientConns = {};

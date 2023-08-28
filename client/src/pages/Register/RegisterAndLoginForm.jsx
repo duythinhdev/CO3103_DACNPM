@@ -3,10 +3,9 @@ import axios from "axios";
 import {Form, FormikProvider, useFormik} from 'formik';
 import * as Yup from "yup";
 import {UserContext} from "../../context/user/UserContext.jsx";
+import GoogleButton from 'react-google-button';
 
 export default function RegisterAndLoginForm() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoginOrRegister, setIsLoginOrRegister] = useState('login');
   const {setUsername: setLoggedInUsername, setId,setIsLoadingLogin, isLoadingLogin} = useContext(UserContext);
 
@@ -16,11 +15,10 @@ export default function RegisterAndLoginForm() {
       username: values?.userName,
       password: values?.password,
     }
-    axios?.post(url, params) .then(response => {
+    axios?.post(url, params).then(response => {
       setLoggedInUsername(values?.userName);
       setId(response?.id);
     }).catch(error => {
-          // Handle error
       console.log("error",error);
     });
   }
@@ -60,7 +58,9 @@ export default function RegisterAndLoginForm() {
     validateForm
   } = formik;
 
-
+    const google = () => {
+        window.open("http://localhost:7878/user/google", "_self");
+    };
 
   return (
     <div className="bg-blue-50 h-screen flex items-center">
@@ -110,6 +110,11 @@ export default function RegisterAndLoginForm() {
                   </button>
                 </div>
               )}
+                <GoogleButton
+                    label='Login Google'
+                    className="ml-1"
+                    onClick={google}
+                />
             </div>
         </Form>
       </FormikProvider>

@@ -112,8 +112,6 @@ export default function Chat() {
       }]));
     }
   }
-  console.log("selectedUserId",selectedUserId);
-  console.log("id",id);
   function sendFile(ev) {
     const reader = new FileReader();
     reader.readAsDataURL(ev.target.files[0]);
