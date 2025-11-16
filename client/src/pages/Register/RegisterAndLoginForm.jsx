@@ -6,7 +6,7 @@ import {UserContext} from "../../context/user/UserContext.jsx";
 import GoogleButton from 'react-google-button';
 
 export default function RegisterAndLoginForm() {
-  const [isLoginOrRegister, setIsLoginOrRegister] = useState('login');
+  const [isLoginOrRegister, setIsLoginOrRegister] = useState('/user/login');
   const {setUsername: setLoggedInUsername, setId,setIsLoadingLogin, isLoadingLogin} = useContext(UserContext);
 
    function handleSubmits() {
@@ -22,6 +22,8 @@ export default function RegisterAndLoginForm() {
       console.log("error",error);
     });
   }
+
+  console.log('isLoginOrRegister',isLoginOrRegister);
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -47,15 +49,9 @@ export default function RegisterAndLoginForm() {
     errors,
     touched,
     values,
-    // isSubmitting,
     handleSubmit,
     getFieldProps,
-    resetForm,
-    setFieldValue,
-    setSubmitting,
-    setErrors,
     handleChange,
-    validateForm
   } = formik;
 
     const google = () => {
@@ -91,21 +87,21 @@ export default function RegisterAndLoginForm() {
             />
           <div style={{ color: "red" }}>{touched?.password && errors?.password}</div>
             <button className="bg-blue-500 text-white block w-full rounded-sm p-2">
-              {isLoginOrRegister === 'register' ? 'register' : 'login'}
+              {isLoginOrRegister === '/user/register' ? 'register' : 'login'}
             </button>
             <div className="text-center mt-2">
-              {isLoginOrRegister === 'register' && (
+              {isLoginOrRegister === '/user/register' && (
                 <div>
                   Already a member?
-                  <button className="ml-1" onClick={() => setIsLoginOrRegister('login')}>
+                  <button className="ml-1" onClick={() => setIsLoginOrRegister('/user/login')}>
                     Login here
                   </button>
                 </div>
               )}
-              {isLoginOrRegister === 'login' && (
+              {isLoginOrRegister === '/user/login' && (
                 <div>
                   Dont have an account?
-                  <button className="ml-1" onClick={() => setIsLoginOrRegister('register')}>
+                  <button className="ml-1" onClick={() => setIsLoginOrRegister('/user/register')}>
                     Register
                   </button>
                 </div>
