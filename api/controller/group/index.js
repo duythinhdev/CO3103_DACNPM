@@ -1,13 +1,11 @@
-const GroupModel = require("../../models/Group")
+const GroupModel = require('../../models/Group');
 
 exports.create = async(req, res) => {
-    const {groupname, members} = req.body
-    console.log(req.body.members)
-    console.log(req.body.groupname)
-    if (groupname == undefined || groupname.length < 3) {
+    const {groupname, members} = req.body;
+    if (groupname === undefined || groupname.length < 3) {
         return res.status(500).json({'error': "group name should > 3 character"});
     }
-    if (members == undefined || members.length <= 1) {
+    if (members === undefined || members.length <= 1) {
         return res.status(500).json({'error': "group should > 1 member"});
     }
     try {
