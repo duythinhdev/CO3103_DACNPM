@@ -21,9 +21,7 @@ export default function RegisterAndLoginForm() {
     }).catch(error => {
       console.log("error",error);
     });
-  }
-
-  console.log('isLoginOrRegister',isLoginOrRegister);
+  };
 
   const formik = useFormik({
     enableReinitialize: true,

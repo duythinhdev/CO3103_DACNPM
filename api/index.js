@@ -47,13 +47,20 @@ app.get("/messages/:userId", async (req, res) => {
   res.json(messages);
 });
 
-app.use("/user", userRouter);
-app.use("/group", groupRouter);
+app.use('/user', userRouter);
+app.use('/group', groupRouter);
 
-const server = app.listen(7878);
+const PORT = 7879;
+const server = app.listen(PORT, () => {
+  console.log('Server is running on port', PORT);
+}).on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.log(`❌ Port ${PORT} is already in use.`);
+    process.exit(1);
+  }
+});
 
 const wss = new ws.WebSocketServer({ server });
-console.log('wss',wss);
 let clientConns = {};
 wss.on('connection', (connection, req) => {
   function notifyAboutOnlinePeople() {

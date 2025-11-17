@@ -6,14 +6,15 @@ import axios from "axios";
 import Contact from "../Contact/Contact.jsx";
 
 export default function Chat() {
-  const [ws, setWs] = useState(null);
-  const [onlinePeople, setOnlinePeople] = useState({});
-  const [offlinePeople, setOfflinePeople] = useState({});
-  const [selectedUserId, setSelectedUserId] = useState(null);
-  const [newMessageText, setNewMessageText] = useState("");
-  const [messages, setMessages] = useState([]);
   const { username, id, setId, setUsername } = useContext(UserContext);
   const divUnderMessages = useRef();
+
+  const [ws, setWs] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [newMessageText, setNewMessageText] = useState("");
+  const [onlinePeople, setOnlinePeople] = useState({});
+  const [offlinePeople, setOfflinePeople] = useState({});
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     connectToWs();
@@ -51,7 +52,7 @@ export default function Chat() {
   const messagesWithoutDupes = uniqBy(messages, "_id");
 
   function connectToWs() {
-    const ws = new WebSocket("ws://localhost:4040");
+    const ws = new WebSocket("ws://localhost:7878");
     setWs(ws);
     ws.addEventListener("message", handleMessage);
     ws.addEventListener("close", () => {
