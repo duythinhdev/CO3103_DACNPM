@@ -1,6 +1,5 @@
 const bodyParser = require('body-parser');
 const express = require('express');
-const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
@@ -11,8 +10,8 @@ const fs = require('fs');
 const userRouter = require('../api/router/user/index');
 const groupRouter = require('../api/router/group/index');
 const { getUserDataFromRequest } = require('../api/util/index');
-require('./util/passport');
 const { connectionDb } = require('../api/mongodb/index');
+require('./util/passport');
 
 dotenv.config();
 
@@ -50,7 +49,7 @@ app.get("/messages/:userId", async (req, res) => {
 app.use('/user', userRouter);
 app.use('/group', groupRouter);
 
-const PORT = 7879;
+const PORT = 7777;
 const server = app.listen(PORT, () => {
   console.log('Server is running on port', PORT);
 }).on('error', (err) => {
