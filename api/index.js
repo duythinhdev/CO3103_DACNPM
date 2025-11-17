@@ -4,23 +4,22 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
-const cors = require("cors");
-const Message = require("./models/Message");
-const ws = require("ws");
+const cors = require('cors');
+const Message = require('./models/Message');
+const ws = require('ws');
 const fs = require('fs');
 const userRouter = require('../api/router/user/index');
 const groupRouter = require('../api/router/group/index');
 const { getUserDataFromRequest } = require('../api/util/index');
-require("./util/passport");
+require('./util/passport');
+const { connectionDb } = require('../api/mongodb/index');
 
 dotenv.config();
 
-mongoose.connect(process.env.MONGO_URL, (err) => {
-  if (err) throw err;
-});
 const jwtSecret = process.env.JWT_SECRET;
 
 const app = express();
+connectionDb();
 app.use(cors({ credentials: true, origin: 'http://localhost:5173' }));
 
 app.use('/uploads', express.static(__dirname + '/uploads'));
@@ -54,8 +53,9 @@ app.use("/group", groupRouter);
 const server = app.listen(7878);
 
 const wss = new ws.WebSocketServer({ server });
+console.log('wss',wss);
 let clientConns = {};
-wss.on("connection", (connection, req) => {
+wss.on('connection', (connection, req) => {
   function notifyAboutOnlinePeople() {
     for (const [userId, conObject] of Object.entries(clientConns)) {
       conObject.client.send(
