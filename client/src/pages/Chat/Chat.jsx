@@ -52,7 +52,7 @@ export default function Chat() {
   const messagesWithoutDupes = uniqBy(messages, "_id");
 
   function connectToWs() {
-    const ws = new WebSocket("ws://localhost:7878");
+    const ws = new WebSocket("ws://localhost:7777");
     setWs(ws);
     ws.addEventListener("message", handleMessage);
     ws.addEventListener("close", () => {
@@ -64,10 +64,10 @@ export default function Chat() {
   }
 
   function showOnlinePeople(peopleArray) {
-    const people = {};
-    peopleArray.forEach(({ userId, username }) => {
-      people[userId] = username;
-    });
+    const people = peopleArray.reduce((acc, { userId, username }) => {
+      acc[userId] = username;
+      return acc;
+    }, {});
     setOnlinePeople(people);
   }
 
