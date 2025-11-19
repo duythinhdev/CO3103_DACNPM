@@ -28,6 +28,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   res.setHeader("Referrer-Policy", "no-referrer");
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+  res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+  );
   next();
 });
 
@@ -138,7 +144,7 @@ wss.on('connection', (connection, req) => {
         file: file ? filename : null,
       });
 
-      clientConns[recipient].client.send(
+      clientConns[recipient]?.client?.send(
         JSON.stringify({
           text,
           sender: connection.userId,
