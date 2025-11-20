@@ -4,19 +4,20 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const { WebSocketServer } = require("ws");
+const { getUserDataFromRequest } = require('../api/util/index');
+const { connectionDb } = require('../api/mongodb/index');
+require('./util/passport');
+
 const Message = require('./models/Message');
 const userRouter = require('../api/router/user/index');
 const groupRouter = require('../api/router/group/index');
 const WebSocketManager = require('./wss/WebSocketManager');
-const { getUserDataFromRequest } = require('../api/util/index');
-const { connectionDb } = require('../api/mongodb/index');
-require('./util/passport');
 
 dotenv.config();
 
 const app = express();
 connectionDb();
-app.use(cors({ credentials: true, origin: 'http://localhost:5173' }));
+app.use(cors({ credentials: true, origin: process.env.VITE_APP_REST_URL }));
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(cookieParser());
 app.use(bodyParser.json());
@@ -24,12 +25,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   res.setHeader("Referrer-Policy", "no-referrer");
-  // res.header("Access-Control-Allow-Origin", "*");
-  // res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-  // res.header(
-  //     "Access-Control-Allow-Headers",
-  //     "Origin, X-Requested-With, Content-Type, Accept"
-  // );
   next();
 });
 
