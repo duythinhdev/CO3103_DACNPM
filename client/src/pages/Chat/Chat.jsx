@@ -67,7 +67,6 @@ export default function Chat() {
       acc[userId] = username;
       return acc;
     }, {});
-    console.log('Online people:', people);
     setOnlinePeople(people);
   }
 
