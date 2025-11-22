@@ -43,6 +43,12 @@ app.get("/test", (req, res) => {
   res.json("test ok");
 });
 
-app.use('/messages', messageRouter);
-app.use('/user', userRouter);
-app.use('/group', groupRouter);
+const ROUTER_API = {
+  MESSAGES: '/messages',
+  USER: '/user',
+  GROUP: '/group',
+};
+
+app.use(ROUTER_API.MESSAGES, messageRouter);
+app.use(ROUTER_API.USER, userRouter);
+app.use(ROUTER_API.GROUP, groupRouter);

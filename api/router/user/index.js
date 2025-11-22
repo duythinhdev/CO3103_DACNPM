@@ -9,11 +9,19 @@ const {
     list
 } = require('../../controller/user');
 
-router?.route('/login').post(login);
-router?.route('/register').post(register);
-router?.route('/logout').post(logout);
-router?.route('/profile').get(profile);
-router?.route('/list').get(list);
+const ROUTER_API = {
+    LOGIN: '/login',
+    REGISTER: '/register',
+    LOGOUT: '/logout',
+    PROFILE: '/profile',
+    LIST: '/list',
+};
+
+router?.route(ROUTER_API?.LOGIN).post(login);
+router?.route(ROUTER_API?.REGISTER).post(register);
+router?.route(ROUTER_API?.LOGOUT).post(logout);
+router?.route(ROUTER_API?.PROFILE).get(profile);
+router?.route(ROUTER_API?.LIST).get(list);
 
 // router?.route("/google/login/failed").get( (req, res) => {
 //     console.log("res",res);
