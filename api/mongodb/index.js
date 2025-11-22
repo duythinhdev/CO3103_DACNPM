@@ -1,8 +1,9 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 class Database {
     constructor() {
         mongoose.set('strictQuery', true);
+        require('dotenv').config();
         this.mongoUrl = process.env.MONGO_URL;
     }
 

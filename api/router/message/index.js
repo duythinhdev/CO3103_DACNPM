@@ -4,5 +4,4 @@ const { message } = require("../../controller/message");
 
 router?.route('/:userId').get(message);
 
-
 module.exports = router;

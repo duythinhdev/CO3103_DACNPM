@@ -9,8 +9,6 @@ const {
     list
 } = require('../../controller/user');
 
-// const CLIENT_URL = "http://localhost:5173/";
-
 router?.route('/login').post(login);
 router?.route('/register').post(register);
 router?.route('/logout').post(logout);

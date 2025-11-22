@@ -6,7 +6,6 @@ const cors = require('cors');
 const { WebSocketServer } = require("ws");
 const Database = require('../api/mongodb/index');
 require('./util/passport');
-
 const userRouter = require('../api/router/user/index');
 const messageRouter = require('../api/router/message');
 const groupRouter = require('../api/router/group/index');
