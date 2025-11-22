@@ -1,9 +1,14 @@
-import React, { useContext, useEffect, useRef, useState, useMemo } from "react";
-import Logo from "../Logo/Logo.jsx";
-import { UserContext } from "../../context/user/UserContext.jsx";
-import { uniqBy } from "lodash";
-import axios from "axios";
-import Contact from "../Contact/Contact.jsx";
+import React, { useContext, useEffect, useRef, useState, useMemo } from 'react';
+import Logo from '../Logo/Logo.jsx';
+import { UserContext } from '../../context/user/UserContext.jsx';
+import { uniqBy } from 'lodash';
+import axios from 'axios';
+import Contact from '../Contact/Contact.jsx';
+
+const ROUTER_API = {
+  USER_LIST: 'user/list',
+  USER_LOGOUT: 'user/logout',
+};
 
 export default function Chat() {
   const { username, id, setId, setUsername } = useContext(UserContext);
@@ -11,7 +16,7 @@ export default function Chat() {
 
   const [ws, setWs] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
-  const [newMessageText, setNewMessageText] = useState("");
+  const [newMessageText, setNewMessageText] = useState('');
   const [onlinePeople, setOnlinePeople] = useState({});
   const [offlinePeople, setOfflinePeople] = useState({});
   const [messages, setMessages] = useState([]);
@@ -28,7 +33,8 @@ export default function Chat() {
   }, [messages]);
 
   useEffect(() => {
-    axios.get("user/people").then((res) => {
+    axios.get(ROUTER_API.USER_LIST).then((res) => {
+      console.log('People response:', res);
       const offlinePeopleArr = res?.data?.filter((p) => p._id !== id)
           ?.filter((p) => !Object.keys(onlinePeople).includes(p._id));
       const offlinePeople = {};
@@ -43,14 +49,12 @@ export default function Chat() {
   delete onlinePeopleExclOurUser[id];
 
   const messagesWithoutDupes = useMemo(() => uniqBy(messages, "_id"), [messages]);
-  console.log('messagesWithoutDupes', messagesWithoutDupes);
-  console.log('messages', messages);
 
   function connectToWs() {
     const ws = new WebSocket(import.meta.env.VITE_APP_WS_URL);
     setWs(ws);
-    ws.addEventListener("message", handleMessage);
-    ws.addEventListener("close", () => {
+    ws.addEventListener('message', handleMessage);
+    ws.addEventListener('close', () => {
       setTimeout(() => {
         console.log("Disconnected. Trying to reconnect.");
         connectToWs();
@@ -63,15 +67,16 @@ export default function Chat() {
       acc[userId] = username;
       return acc;
     }, {});
+    console.log('Online people:', people);
     setOnlinePeople(people);
   }
 
   function handleMessage(ev) {
     const messageData = JSON.parse(ev?.data);
     console.log({ ev, messageData });
-    if ("online" in messageData) {
+    if ('online' in messageData) {
       showOnlinePeople(messageData?.online);
-    } else if ("text" in messageData) {
+    } else if ('text' in messageData) {
       if (messageData?.sender === selectedUserId) {
         setMessages((prev) => [...prev, { ...messageData }]);
       }
@@ -79,7 +84,7 @@ export default function Chat() {
   }
 
   function logout() {
-    axios.post("/user/logout").then(() => {
+    axios.post(ROUTER_API.USER_LOGOUT).then(() => {
       setWs(null);
       setId(null);
       setUsername(null);
@@ -90,27 +95,27 @@ export default function Chat() {
     if (ev) ev.preventDefault();
     ws.send(
       JSON.stringify({
-        recipient: selectedUserId || "",
+        recipient: selectedUserId || '',
         text: newMessageText,
         file,
       }),
     );
     if (file) {
-      axios.get("/messages/" + selectedUserId).then((res) => {
+      axios.get(`/messages/${selectedUserId}`).then((res) => {
         setMessages(res.data);
       });
-    } else {
-      setNewMessageText("");
-      setMessages((prev) => [
-        ...prev,
-        {
-          text: newMessageText,
-          sender: id,
-          recipient: selectedUserId.toString(),
-          _id: Date.now(),
-        },
-      ]);
+      return;
     }
+    setNewMessageText('');
+    setMessages((prev) => [
+      ...prev,
+      {
+        text: newMessageText,
+        sender: id,
+        recipient: selectedUserId.toString(),
+        _id: Date.now(),
+      },
+    ]);
   }
 
   function sendFile(ev) {
@@ -126,7 +131,7 @@ export default function Chat() {
 
   const getUserId = (userId) => {
     if (userId) {
-      axios.get("/messages/" + userId).then((res) => {
+      axios.get(`/messages/${userId}`).then((res) => {
         setMessages(res.data);
       });
     }
