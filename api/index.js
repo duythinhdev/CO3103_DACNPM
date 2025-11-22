@@ -4,12 +4,11 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const { WebSocketServer } = require("ws");
-const { getUserDataFromRequest } = require('../api/util/index');
 const Database = require('../api/mongodb/index');
 require('./util/passport');
 
-const Message = require('./models/Message');
 const userRouter = require('../api/router/user/index');
+const messageRouter = require('../api/router/message');
 const groupRouter = require('../api/router/group/index');
 const WebSocketManager = require('./wss/WebSocketManager');
 
@@ -44,16 +43,7 @@ app.use((req, res, next) => {
 app.get("/test", (req, res) => {
   res.json("test ok");
 });
-app.get("/messages/:userId", async (req, res) => {
-  const { userId } = req.params;
-  const userData = await getUserDataFromRequest(req);
-  const ourUserId = userData.userId;
-  const messages = await Message.find({
-    sender: { $in: [userId, ourUserId] },
-    recipient: { $in: [userId, ourUserId] },
-  }).sort({ createdAt: 1 });
-  res.json(messages);
-});
 
+app.use('/messages', messageRouter);
 app.use('/user', userRouter);
 app.use('/group', groupRouter);

@@ -77,7 +77,7 @@ exports.profile = (req, res) => {
   }
 };
 
-exports.people = async (req, res) => {
+exports.list = async (req, res) => {
   const users = await User.find({}, { _id: 1, username: 1 });
   try {
     res.json(users);

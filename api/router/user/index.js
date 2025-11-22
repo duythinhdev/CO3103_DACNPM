@@ -1,21 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const passport = require("passport");
+const passport = require('passport');
 const {
     login,
     register,
     logout,
     profile,
-    people
-} = require('../../controller/user/index');
+    list
+} = require('../../controller/user');
 
 // const CLIENT_URL = "http://localhost:5173/";
 
-router?.route("/login").post(login);
-router?.route("/register").post(register);
-router?.route("/logout").post(logout);
-router?.route("/profile").get(profile);
-router?.route("/people").get(people);
+router?.route('/login').post(login);
+router?.route('/register').post(register);
+router?.route('/logout').post(logout);
+router?.route('/profile').get(profile);
+router?.route('/list').get(list);
 
 // router?.route("/google/login/failed").get( (req, res) => {
 //     console.log("res",res);
