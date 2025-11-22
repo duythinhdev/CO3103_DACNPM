@@ -41,8 +41,7 @@ exports.register = async (req, res) => {
       {},
       (err, token) => {
         if (err) throw err;
-        res
-          .cookie("token", token, { sameSite: "none", secure: true })
+        res.cookie("token", token, { sameSite: "none", secure: true })
           .status(201)
           .json({
             id: createdUser._id,

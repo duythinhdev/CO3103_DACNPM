@@ -4,11 +4,11 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const { WebSocketServer } = require("ws");
-const Database = require('../api/mongodb/index');
+const Database = require('../api/mongodb');
 require('./util/passport');
-const userRouter = require('../api/router/user/index');
+const userRouter = require('../api/router/user');
 const messageRouter = require('../api/router/message');
-const groupRouter = require('../api/router/group/index');
+const groupRouter = require('../api/router/group');
 const WebSocketManager = require('./wss/WebSocketManager');
 
 dotenv.config();
