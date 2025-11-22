@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState, useMemo } from "react";
 import Logo from "../Logo/Logo.jsx";
 import { UserContext } from "../../context/user/UserContext.jsx";
 import { uniqBy } from "lodash";
@@ -29,7 +29,8 @@ export default function Chat() {
 
   useEffect(() => {
     axios.get("user/people").then((res) => {
-      const offlinePeopleArr = res.data?.filter((p) => p._id !== id)?.filter((p) => !Object.keys(onlinePeople).includes(p._id));
+      const offlinePeopleArr = res?.data?.filter((p) => p._id !== id)
+          ?.filter((p) => !Object.keys(onlinePeople).includes(p._id));
       const offlinePeople = {};
       offlinePeopleArr.forEach((p) => {
         offlinePeople[p._id] = p;
@@ -41,10 +42,12 @@ export default function Chat() {
   const onlinePeopleExclOurUser = { ...onlinePeople };
   delete onlinePeopleExclOurUser[id];
 
-  const messagesWithoutDupes = uniqBy(messages, "_id");
+  const messagesWithoutDupes = useMemo(() => uniqBy(messages, "_id"), [messages]);
+  console.log('messagesWithoutDupes', messagesWithoutDupes);
+  console.log('messages', messages);
 
   function connectToWs() {
-    const ws = new WebSocket("ws://localhost:7777");
+    const ws = new WebSocket(import.meta.env.VITE_APP_WS_URL);
     setWs(ws);
     ws.addEventListener("message", handleMessage);
     ws.addEventListener("close", () => {
@@ -123,7 +126,7 @@ export default function Chat() {
 
   const getUserId = (userId) => {
     if (userId) {
-      axios.get('/messages/' + userId).then((res) => {
+      axios.get("/messages/" + userId).then((res) => {
         setMessages(res.data);
       });
     }

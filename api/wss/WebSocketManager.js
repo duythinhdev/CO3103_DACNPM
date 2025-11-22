@@ -13,6 +13,7 @@ class WebSocketManager {
     }
 
     notifyAboutOnlinePeople() {
+        console.log('clientConns', this.clientConns);
         const online = Object.entries(this.clientConns).map(([userId, c]) => ({
             userId,
             username: c.username,
@@ -43,7 +44,7 @@ class WebSocketManager {
 
         this.handleAuth(connection, req);
 
-        connection.on("message", (message) => {
+        connection.on('message', (message) => {
             this.handleMessage(connection, message);
         });
 
@@ -62,7 +63,6 @@ class WebSocketManager {
 
         jwt.verify(token, process.env.JWT_SECRET, {}, (err, userData) => {
             if (err) throw err;
-
             const { userId, username } = userData;
 
             this.clientConns[userId] = {
@@ -97,6 +97,7 @@ class WebSocketManager {
                 text,
                 file: filename,
             });
+            console.log('Message saved:', messageDoc);
 
             this.clientConns[recipient]?.client?.send(
                 JSON.stringify({
