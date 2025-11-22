@@ -28,16 +28,14 @@ export default function RegisterAndLoginForm() {
       password: values?.password,
     };
     setIsLoadingLogin(true);
-    axios
-      ?.post(url, params)
+    axios?.post(url, params)
       .then((response) => {
         setLoggedInUsername(values?.userName);
         setId(response?.id);
       })
       .catch((error) => {
         console.log("error", error);
-      })
-      .finally(() => {
+      }).finally(() => {
         setIsLoadingLogin(false);
       });
   }

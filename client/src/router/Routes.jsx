@@ -4,7 +4,11 @@ import { UserContext } from '../context/user/UserContext.jsx';
 import Chat from '../pages/Chat/Chat.jsx';
 
 export default function Routes() {
-  const { username } = useContext(UserContext);
+  const { username, id } = useContext(UserContext);
+
+  if (!username || !id) {
+    return <div>Loading...</div>;
+  }
 
   if (username) {
     return <Chat />;

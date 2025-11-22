@@ -13,7 +13,7 @@ export function UserContextProvider({ children }) {
       setId(response.data.userId);
       setUsername(response.data.username);
     });
-  }, []);
+  }, [isLoadingLogin]);
 
   return (
     <UserContext.Provider
