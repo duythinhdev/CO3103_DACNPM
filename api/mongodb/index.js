@@ -11,7 +11,6 @@ class Database {
         try {
             await mongoose.connect(this.mongoUrl);
             console.log("MongoDB Connected");
-
             this._handleEvents();
         } catch (error) {
             console.error("MongoDB connection error:", error);

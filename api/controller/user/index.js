@@ -65,7 +65,7 @@ exports.logout = (req, res) => {
 };
 
 exports.profile = (req, res) => {
-  const token = req.cookies?.token;
+  const token = req.cookies.token;
   if (token) {
     jwt.verify(token, jwtSecret, {}, (err, userData) => {
       if (err) throw err;

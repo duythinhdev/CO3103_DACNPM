@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const Message = require('../models/Message');
+const path = require("path");
 
 class WebSocketManager {
     constructor(wss) {
@@ -13,7 +14,6 @@ class WebSocketManager {
     }
 
     notifyAboutOnlinePeople() {
-        console.log('clientConns', this.clientConns);
         const online = Object.entries(this.clientConns).map(([userId, c]) => ({
             userId,
             username: c.username,
@@ -81,10 +81,17 @@ class WebSocketManager {
         let filename = null;
 
         if (file) {
+            console.log('file',file);
             const ext = file.name.split(".").pop();
             filename = `${Date.now()}.${ext}`;
             const path = __dirname + "/uploads/" + filename;
 
+            // const uploadsDir = path.join(__dirname, "uploads");
+            // if (!fs.existsSync(uploadsDir)) {
+            //     fs.mkdirSync(uploadsDir, { recursive: true });
+            // }
+
+            // const uploadPath = path.join(uploadsDir, filename);
             const bufferData = Buffer.from(file.data.split(",")[1], "base64");
             fs.writeFileSync(path, bufferData);
         }
@@ -97,7 +104,6 @@ class WebSocketManager {
                 text,
                 file: filename,
             });
-            console.log('Message saved:', messageDoc);
 
             this.clientConns[recipient]?.client?.send(
                 JSON.stringify({
