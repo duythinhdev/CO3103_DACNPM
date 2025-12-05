@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const Message = require('../models/Message');
-const path = require("path");
 
 class WebSocketManager {
     constructor(wss) {
